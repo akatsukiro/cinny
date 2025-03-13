@@ -301,6 +301,7 @@ function PageZoomInput() {
 function Appearance() {
   const [systemTheme, setSystemTheme] = useSetting(settingsAtom, 'useSystemTheme');
   const [twitterEmoji, setTwitterEmoji] = useSetting(settingsAtom, 'twitterEmoji');
+  const [roomAvatars, setRoomAvatars] = useSetting(settingsAtom, 'roomAvatars');
 
   return (
     <Box direction="Column" gap="100">
@@ -336,6 +337,13 @@ function Appearance() {
 
       <SequenceCard className={SequenceCardStyle} variant="SurfaceVariant" direction="Column">
         <SettingTile title="Page Zoom" after={<PageZoomInput />} />
+      </SequenceCard>
+
+      <SequenceCard className={SequenceCardStyle} variant="SurfaceVariant" direction="Column">
+        <SettingTile
+          title="Show room avatars"
+          after={<Switch variant="Primary" value={roomAvatars} onChange={setRoomAvatars} />}
+        />
       </SequenceCard>
     </Box>
   );
