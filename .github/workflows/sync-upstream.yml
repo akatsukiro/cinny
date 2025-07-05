@@ -32,30 +32,12 @@ jobs:
           git config --global user.name "krishukr[bot]"
           git config --global user.email "krishukr[bot]@users.noreply.github.com"
       # 4. Perform the sync and rebase
-      - name: Sync Fork
-        run: |
-          # Add the upstream repository remote
-          git remote add upstream https://github.com/cinnyapp/cinny.git
-
-          # Fetch all branches from upstream
-          git fetch upstream
-
-          # Determine the default branch of the fork
-          DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
-
-          # Determine the default branch of the upstream repository
-          UPSTREAM_DEFAULT_BRANCH=$(git remote show upstream | grep 'HEAD branch' | cut -d' ' -f5)
-
-          # Rebase the fork's default branch with the upstream's default branch
-          echo "Rebasing local 'upstream/$UPSTREAM_DEFAULT_BRANCH' with '$DEFAULT_BRANCH'..."
-          git rebase "upstream/$UPSTREAM_DEFAULT_BRANCH" "$DEFAULT_BRANCH"
-
-          # Merge branches
-          git merge "upstream/$UPSTREAM_DEFAULT_BRANCH"
-
-          # Force push the rebased branch to the fork
-          echo "Pushing changes to origin..."
-          git push origin "$DEFAULT_BRANCH"
-        env:
-          # Use the generated token for authentication
-          GH_TOKEN: ${{ steps.get_token.outputs.token }}
+      - name: Rebase Upstream
+        uses: imba-tjd/rebase-upstream-action@0.12
+        with:
+          # <user>/<repo> or the full HTTP URL
+          upstream: cinnyapp/cinny
+          # The upstream branch that is rebased on
+          branch: dev
+          # GitHub token to access to API and git
+          token: ${{ steps.get_token.outputs.token }}
