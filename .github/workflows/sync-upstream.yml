@@ -47,12 +47,15 @@ jobs:
           UPSTREAM_DEFAULT_BRANCH=$(git remote show upstream | grep 'HEAD branch' | cut -d' ' -f5)
 
           # Rebase the fork's default branch with the upstream's default branch
-          echo "Rebasing local '$DEFAULT_BRANCH' with 'upstream/$UPSTREAM_DEFAULT_BRANCH'..."
-          git rebase "upstream/$UPSTREAM_DEFAULT_BRANCH"
+          echo "Rebasing local 'upstream/$UPSTREAM_DEFAULT_BRANCH' with '$DEFAULT_BRANCH'..."
+          git rebase "upstream/$UPSTREAM_DEFAULT_BRANCH" "$DEFAULT_BRANCH"
+
+          # Merge branches
+          git merge "upstream/$UPSTREAM_DEFAULT_BRANCH"
 
           # Force push the rebased branch to the fork
           echo "Pushing changes to origin..."
-          git push origin "$DEFAULT_BRANCH" --force
+          git push origin "$DEFAULT_BRANCH"
         env:
           # Use the generated token for authentication
           GH_TOKEN: ${{ steps.get_token.outputs.token }}
