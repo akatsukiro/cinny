@@ -1,7 +1,7 @@
 import { useAtomValue } from 'jotai';
 import React, { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RoomEvent, RoomEventHandlerMap } from 'matrix-js-sdk';
+import { RoomEvent, RoomEventHandlerMap, SetPresence } from 'matrix-js-sdk';
 import { roomToUnreadAtom, unreadEqual, unreadInfoToUnread } from '../../state/room/roomToUnread';
 import LogoSVG from '../../../../public/res/svg/cinny.svg';
 import LogoUnreadSVG from '../../../../public/res/svg/cinny-unread.svg';
@@ -258,6 +258,28 @@ function MessageNotifications() {
   );
 }
 
+function UpdatePresence() {
+  const mx = useMatrixClient();
+  const onFocus = () => {
+    mx.setSyncPresence(SetPresence.Online);
+  };
+  const onBlur = () => {
+    mx.setSyncPresence(SetPresence.Unavailable);
+  }
+
+  useEffect(() => {
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("blur", onBlur);
+    onFocus();
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, [mx]);
+
+  return null;
+}
+
 type ClientNonUIFeaturesProps = {
   children: ReactNode;
 };
@@ -270,6 +292,7 @@ export function ClientNonUIFeatures({ children }: ClientNonUIFeaturesProps) {
       <FaviconUpdater />
       <InviteNotifications />
       <MessageNotifications />
+      <UpdatePresence />
       {children}
     </>
   );
