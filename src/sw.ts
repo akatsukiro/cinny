@@ -187,7 +187,8 @@ self.addEventListener('notificationclick', (event: NotificationEvent) => {
   /**
    * We should likely add a postMessage back to navigate to the room the event is from
    */
-  const targetUrl = event.notification.data?.url || self.registration.scope;
+  // const targetUrl = event.notification.data?.url || self.registration.scope;
+  const targetUrl = `${self.registration.scope}/inbox/notifications/`;
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
