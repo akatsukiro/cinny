@@ -145,14 +145,17 @@ const handlePushNotificationEventData = async (eventData: PushMessageData) => {
     await navigator.clearAppBadge();
   }
 
-  const title = pushData.room_name ?? "New Notification";
-  const sender_display_name = pushData.sender_display_name ?? "Unknown";
+  let title = undefined;
+  if (pushData.sender_display_name && pushData.room_name) {
+    title = `${pushData.sender_display_name} in ${pushData.room_name}`;
+  }
+  title = title ?? "New Notification";
 
   let body = "You have a new message";
   if (pushData.content.ciphertext) {
-    body = `Encrypted message from ${sender_display_name}`
+    body = `Encrypted message`;
   } else if (pushData.content.body) {
-    body = `From ${sender_display_name}: ${pushData.content.body}`;
+    body = pushData.content.body;
   } else {
     return;
   }
