@@ -26,6 +26,7 @@ import { getMxIdLocalPart, mxcUrlToHttp } from '../../utils/matrix';
 import { useSelectedRoom } from '../../hooks/router/useSelectedRoom';
 import { useInboxNotificationsSelected } from '../../hooks/router/useInbox';
 import { useMediaAuthentication } from '../../hooks/useMediaAuthentication';
+import { useRoomNavigate } from '../../hooks/useRoomNavigate';
 
 function SystemEmojiFeature() {
   const [twitterEmoji] = useSetting(settingsAtom, 'twitterEmoji');
@@ -290,6 +291,41 @@ function UpdatePresence() {
   return null;
 }
 
+function HandleNotificationClick() {
+  const { navigateRoom } = useRoomNavigate();
+
+  const handleNotificationClickEvent = (event: any) => {
+    if (
+      !event.data ||
+      !event.source
+    ) {
+      return;
+    }
+    const eventData = event.data;
+    if (
+      !(eventData.type == "notificationToRoomEvent") ||
+      !eventData.room_id ||
+      !eventData.event_id
+    ) {
+      return;
+    }
+
+    console.log("main thread received notification click event:");
+    console.log(event);
+    navigateRoom(eventData.room_id, eventData.event_id);
+  };
+
+  useEffect( () => {
+    navigator.serviceWorker.addEventListener("message", handleNotificationClickEvent);
+    console.log("notification click event is listening on main thread");
+    return () => {
+      navigator.serviceWorker.removeEventListener("message", handleNotificationClickEvent);
+    }
+  }, [navigateRoom]);
+
+  return null;
+}
+
 type ClientNonUIFeaturesProps = {
   children: ReactNode;
 };
@@ -303,6 +339,7 @@ export function ClientNonUIFeatures({ children }: ClientNonUIFeaturesProps) {
       <InviteNotifications />
       <MessageNotifications />
       <UpdatePresence />
+      <HandleNotificationClick />
       {children}
     </>
   );
