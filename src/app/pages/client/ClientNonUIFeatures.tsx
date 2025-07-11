@@ -147,7 +147,7 @@ function MessageNotifications() {
   const [showNotifications] = useSetting(settingsAtom, 'useInAppNotifications');
   const [notificationSound] = useSetting(settingsAtom, 'isNotificationSounds');
 
-  const navigate = useNavigate();
+  const { navigateRoom } = useRoomNavigate();
   const notificationSelected = useInboxNotificationsSelected();
   const selectedRoomId = useSelectedRoom();
 
@@ -156,6 +156,8 @@ function MessageNotifications() {
       roomName,
       roomAvatar,
       username,
+      roomId,
+      eventId,
       message,
     }: {
       roomName: string;
@@ -173,7 +175,7 @@ function MessageNotifications() {
       });
 
       noti.onclick = () => {
-        if (!window.closed) navigate(getInboxNotificationsPath());
+        if (!window.closed) navigateRoom(roomId, eventId);
         noti.close();
         notifRef.current = undefined;
       };
@@ -181,7 +183,7 @@ function MessageNotifications() {
       notifRef.current?.close();
       notifRef.current = noti;
     },
-    [navigate]
+    [navigateRoom]
   );
 
   const playSound = useCallback(() => {
