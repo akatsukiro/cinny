@@ -121,6 +121,7 @@ function InviteNotifications() {
 
   useEffect(() => {
     if (invites.length > perviousInviteLen && mx.getSyncState() === 'SYNCING') {
+      if (document.visibilityState != "visible") return;
       if (showNotifications && notificationPermission('granted')) {
         notify(invites.length - perviousInviteLen);
       }
