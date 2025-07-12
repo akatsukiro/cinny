@@ -106,6 +106,7 @@ function InviteNotifications() {
       });
 
       noti.onclick = () => {
+        if (!document.hasFocus()) window.focus();
         if (!window.closed) navigate(getInboxInvitesPath());
         noti.close();
       };
@@ -175,6 +176,7 @@ function MessageNotifications() {
       });
 
       noti.onclick = () => {
+        if (!document.hasFocus()) window.focus();
         if (!window.closed) navigateRoom(roomId, eventId);
         noti.close();
         notifRef.current = undefined;
