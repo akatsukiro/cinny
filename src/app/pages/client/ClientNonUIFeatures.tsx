@@ -27,6 +27,7 @@ import { useSelectedRoom } from '../../hooks/router/useSelectedRoom';
 import { useInboxNotificationsSelected } from '../../hooks/router/useInbox';
 import { useMediaAuthentication } from '../../hooks/useMediaAuthentication';
 import { useRoomNavigate } from '../../hooks/useRoomNavigate';
+import { isMobileOnly } from 'react-device-detect';
 
 function SystemEmojiFeature() {
   const [twitterEmoji] = useSetting(settingsAtom, 'twitterEmoji');
@@ -127,7 +128,7 @@ function InviteNotifications() {
         notify(invites.length - perviousInviteLen);
       }
 
-      if (notificationSound) {
+      if (!isMobileOnly && notificationSound) {
         playSound();
       }
     }
@@ -259,7 +260,7 @@ function MessageNotifications() {
         });
       }
 
-      if (notificationSound) {
+      if (!isMobileOnly && notificationSound) {
         playSound();
       }
     };
