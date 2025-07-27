@@ -454,6 +454,9 @@ export function RoomTimeline({
   const [showHiddenEvents] = useSetting(settingsAtom, 'showHiddenEvents');
   const [showDeveloperTools] = useSetting(settingsAtom, 'developerTools');
 
+  const [hour24Clock] = useSetting(settingsAtom, 'hour24Clock');
+  const [dateFormatString] = useSetting(settingsAtom, 'dateFormatString');
+
   const ignoredUsersList = useIgnoredUsers();
   const ignoredUsersSet = useMemo(() => new Set(ignoredUsersList), [ignoredUsersList]);
 
@@ -1076,6 +1079,8 @@ export function RoomTimeline({
             powerLevelTag={getPowerLevelTag(senderPowerLevel)}
             accessibleTagColors={accessibleTagColors}
             legacyUsernameColor={legacyUsernameColor || direct}
+            hour24Clock={hour24Clock}
+            dateFormatString={dateFormatString}
           >
             {mEvent.isRedacted() ? (
               <RedactedContent reason={mEvent.getUnsigned().redacted_because?.content.reason} />
@@ -1158,6 +1163,8 @@ export function RoomTimeline({
             powerLevelTag={getPowerLevelTag(senderPowerLevel)}
             accessibleTagColors={accessibleTagColors}
             legacyUsernameColor={legacyUsernameColor || direct}
+            hour24Clock={hour24Clock}
+            dateFormatString={dateFormatString}
           >
             <EncryptedContent mEvent={mEvent}>
               {() => {
@@ -1260,6 +1267,8 @@ export function RoomTimeline({
             powerLevelTag={getPowerLevelTag(senderPowerLevel)}
             accessibleTagColors={accessibleTagColors}
             legacyUsernameColor={legacyUsernameColor || direct}
+            hour24Clock={hour24Clock}
+            dateFormatString={dateFormatString}
           >
             {mEvent.isRedacted() ? (
               <RedactedContent reason={mEvent.getUnsigned().redacted_because?.content.reason} />
@@ -1288,7 +1297,12 @@ export function RoomTimeline({
         const parsed = parseMemberEvent(mEvent);
 
         const timeJSX = (
-          <Time ts={mEvent.getTs()} compact={messageLayout === MessageLayout.Compact} />
+          <Time
+            ts={mEvent.getTs()}
+            compact={messageLayout === MessageLayout.Compact}
+            hour24Clock={hour24Clock}
+            dateFormatString={dateFormatString}
+          />
         );
 
         return (
@@ -1325,7 +1339,12 @@ export function RoomTimeline({
         const senderName = getMemberDisplayName(room, senderId) || getMxIdLocalPart(senderId);
 
         const timeJSX = (
-          <Time ts={mEvent.getTs()} compact={messageLayout === MessageLayout.Compact} />
+          <Time
+            ts={mEvent.getTs()}
+            compact={messageLayout === MessageLayout.Compact}
+            hour24Clock={hour24Clock}
+            dateFormatString={dateFormatString}
+          />
         );
 
         return (
@@ -1363,7 +1382,12 @@ export function RoomTimeline({
         const senderName = getMemberDisplayName(room, senderId) || getMxIdLocalPart(senderId);
 
         const timeJSX = (
-          <Time ts={mEvent.getTs()} compact={messageLayout === MessageLayout.Compact} />
+          <Time
+            ts={mEvent.getTs()}
+            compact={messageLayout === MessageLayout.Compact}
+            hour24Clock={hour24Clock}
+            dateFormatString={dateFormatString}
+          />
         );
 
         return (
@@ -1401,7 +1425,12 @@ export function RoomTimeline({
         const senderName = getMemberDisplayName(room, senderId) || getMxIdLocalPart(senderId);
 
         const timeJSX = (
-          <Time ts={mEvent.getTs()} compact={messageLayout === MessageLayout.Compact} />
+          <Time
+            ts={mEvent.getTs()}
+            compact={messageLayout === MessageLayout.Compact}
+            hour24Clock={hour24Clock}
+            dateFormatString={dateFormatString}
+          />
         );
 
         return (
@@ -1441,7 +1470,12 @@ export function RoomTimeline({
       const senderName = getMemberDisplayName(room, senderId) || getMxIdLocalPart(senderId);
 
       const timeJSX = (
-        <Time ts={mEvent.getTs()} compact={messageLayout === MessageLayout.Compact} />
+        <Time
+          ts={mEvent.getTs()}
+          compact={messageLayout === MessageLayout.Compact}
+          hour24Clock={hour24Clock}
+          dateFormatString={dateFormatString}
+        />
       );
 
       return (
@@ -1486,7 +1520,12 @@ export function RoomTimeline({
       const senderName = getMemberDisplayName(room, senderId) || getMxIdLocalPart(senderId);
 
       const timeJSX = (
-        <Time ts={mEvent.getTs()} compact={messageLayout === MessageLayout.Compact} />
+        <Time
+          ts={mEvent.getTs()}
+          compact={messageLayout === MessageLayout.Compact}
+          hour24Clock={hour24Clock}
+          dateFormatString={dateFormatString}
+        />
       );
 
       return (
