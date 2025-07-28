@@ -2,6 +2,7 @@ import { useAtomValue } from 'jotai';
 import React, { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EventType, RoomEvent, RoomEventHandlerMap, SetPresence } from 'matrix-js-sdk';
+import { isMobileOnly } from 'react-device-detect';
 import { roomToUnreadAtom, unreadEqual, unreadInfoToUnread } from '../../state/room/roomToUnread';
 import LogoSVG from '../../../../public/res/svg/cinny.svg';
 import LogoUnreadSVG from '../../../../public/res/svg/cinny-unread.svg';
@@ -27,7 +28,7 @@ import { useSelectedRoom } from '../../hooks/router/useSelectedRoom';
 import { useInboxNotificationsSelected } from '../../hooks/router/useInbox';
 import { useMediaAuthentication } from '../../hooks/useMediaAuthentication';
 import { useRoomNavigate } from '../../hooks/useRoomNavigate';
-import { isMobileOnly } from 'react-device-detect';
+import { registrationAtom } from '../../state/serviceWorkerRegistration';
 
 function SystemEmojiFeature() {
   const [twitterEmoji] = useSetting(settingsAtom, 'twitterEmoji');
@@ -55,6 +56,8 @@ function PageZoomFeature() {
 
 function FaviconUpdater() {
   const roomToUnread = useAtomValue(roomToUnreadAtom);
+  const [usePushNotifications] = useSetting(settingsAtom, 'usePushNotifications');
+  const registration = useAtomValue(registrationAtom);
 
   useEffect(() => {
     let notification = false;
@@ -82,7 +85,13 @@ function FaviconUpdater() {
     } catch (e) {
       // Likely Firefox/Gecko-based and doesn't support badging API
     }
-  }, [roomToUnread]);
+    if (usePushNotifications && total === 0) {
+      registration.getNotifications()
+        .then((pushNotifications) => pushNotifications
+          .forEach((pushNotification) => pushNotification.close()));
+      navigator.clearAppBadge();
+    }
+  }, [roomToUnread, usePushNotifications, registration]);
 
   return null;
 }
