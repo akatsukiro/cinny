@@ -64,6 +64,7 @@ import { RoomSettingsRenderer } from '../features/room-settings';
 import { ClientRoomsNotificationPreferences } from './client/ClientRoomsNotificationPreferences';
 import { SpaceSettingsRenderer } from '../features/space-settings';
 import { ToRoomEvent } from './client/ToRoomEvent';
+import { UserRoomProfileRenderer } from '../components/UserRoomProfileRenderer';
 import { CreateRoomModalRenderer } from '../features/create-room';
 import { HomeCreateRoom } from './client/home/CreateRoom';
 import { Create } from './client/create';
@@ -132,6 +133,7 @@ export const createRouter = (clientConfig: ClientConfig, screenSize: ScreenSize)
                       >
                         <Outlet />
                       </ClientLayout>
+                      <UserRoomProfileRenderer />
                       <CreateRoomModalRenderer />
                       <CreateSpaceModalRenderer />
                       <RoomSettingsRenderer />
