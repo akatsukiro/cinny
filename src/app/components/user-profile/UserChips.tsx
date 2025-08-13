@@ -41,6 +41,8 @@ import { useTimeoutToggle } from '../../hooks/useTimeoutToggle';
 import { useIgnoredUsers } from '../../hooks/useIgnoredUsers';
 import { CutoutCard } from '../cutout-card';
 import { SettingTile } from '../setting-tile';
+import { useSetting } from '../../state/hooks/settings';
+import { settingsAtom } from '../../state/settings';
 
 export function ServerChip({ server }: { server: string }) {
   const mx = useMatrixClient();
@@ -242,6 +244,8 @@ export function MutualRoomsChip({ userId }: { userId: string }) {
   const allJoinedRooms = useAllJoinedRoomsSet();
   const getRoom = useGetRoom(allJoinedRooms);
 
+  const [showRoomAvatars] = useSetting(settingsAtom, 'roomAvatars');
+
   const [cords, setCords] = useState<RectCords>();
 
   const open: MouseEventHandler<HTMLButtonElement> = (evt) => {
@@ -289,6 +293,25 @@ export function MutualRoomsChip({ userId }: { userId: string }) {
     const { roomId } = room;
     const dm = directs.includes(roomId);
 
+    const roomAvatar = (() => {
+      if (showRoomAvatars) {
+        return <RoomAvatar
+          roomId={roomId}
+          src={getRoomAvatarUrl(mx, room, 96, useAuthentication)}
+          alt={room.name}
+          renderFallback={() => (
+            <Text as="span" size="H6">
+              {nameInitials(room.name)}
+            </Text>
+          )}
+        />
+      }
+      return <RoomIcon
+        size="100"
+        joinRule={room.getJoinRule()}
+      />;
+    })();
+
     return (
       <MenuItem
         key={roomId}
@@ -322,9 +345,7 @@ export function MutualRoomsChip({ userId }: { userId: string }) {
                   </Text>
                 )}
               />
-            ) : (
-              <RoomIcon size="100" joinRule={room.getJoinRule()} />
-            )}
+            ) : roomAvatar}
           </Avatar>
         }
       >
