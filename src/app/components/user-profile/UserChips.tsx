@@ -329,7 +329,7 @@ export function MutualRoomsChip({ userId }: { userId: string }) {
           closeUserRoomProfile();
         }}
         before={
-          <Avatar size="200" radii={dm ? '400' : '300'}>
+          <Avatar size="200" radii={(dm || showRoomAvatars) ? '400' : '300'}>
             {dm || room.isSpaceRoom() ? (
               <RoomAvatar
                 roomId={room.roomId}
