@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { User, UserEvent, UserEventHandlerMap } from 'matrix-js-sdk';
+import { atom, useAtomValue } from 'jotai';
 import { useMatrixClient } from './useMatrixClient';
 
 export enum Presence {
@@ -22,11 +23,15 @@ const getUserPresence = (user: User): UserPresence => ({
   lastActiveTs: user.getLastActiveTs(),
 });
 
+const isInitUserPresenceMapAtom = atom<Map<string, boolean>>(new Map<string, boolean>);
+
 export const useUserPresence = (userId: string): UserPresence | undefined => {
   const mx = useMatrixClient();
   const user = mx.getUser(userId);
 
   const [presence, setPresence] = useState(() => (user ? getUserPresence(user) : undefined));
+
+  const isInitUserPresenceMap = useAtomValue(isInitUserPresenceMapAtom);
 
   useEffect(() => {
     const updatePresence: UserEventHandlerMap[UserEvent.Presence] = (event, u) => {
@@ -43,6 +48,32 @@ export const useUserPresence = (userId: string): UserPresence | undefined => {
       user?.removeListener(UserEvent.LastPresenceTs, updatePresence);
     };
   }, [user]);
+
+  useEffect(() => {
+    const fetchInitPresence = async () => {
+      if (!user || user.lastPresenceTs || isInitUserPresenceMap.get(user.userId)) return;
+      const initPresence = await mx.getPresence(user.userId);
+      if (initPresence.presence === "offline"
+        && initPresence.status_msg === undefined
+        && initPresence.last_active_ago === undefined
+        && initPresence.currently_active === undefined) return;
+      setPresence({
+        presence: initPresence.presence as Presence,
+        status: initPresence.status_msg,
+        active: initPresence.currently_active as boolean,
+        lastActiveTs: initPresence?.last_active_ago
+          ? Date.now() - initPresence.last_active_ago
+          : undefined,
+      });
+      if (initPresence.last_active_ago) {
+        user.lastActiveAgo = initPresence.last_active_ago;
+        user.lastPresenceTs = Date.now();
+      }
+      isInitUserPresenceMap.set(user.userId, true);
+    };
+
+    fetchInitPresence();
+  }, [mx, user, isInitUserPresenceMap]);
 
   return presence;
 };
