@@ -48,7 +48,7 @@ export function PresenceBadge({ presence, status, lastActiveTs, size }: Presence
             <Text size="L400">{label[presence]}</Text>
             {status && <Text size="T200">•</Text>}
             {status && <Text size="T200">{status}</Text>}
-            {(lastActiveTs && presence !== Presence.Online) && (
+            {(lastActiveTs && !Number.isNaN(lastActiveTs) && presence !== Presence.Online) && (
               <>
                 <Text size="T200">•</Text>
                 <Text size="T200">Last seen</Text>
