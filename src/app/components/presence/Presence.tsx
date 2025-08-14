@@ -13,6 +13,9 @@ import {
 import React, { ReactNode, useId } from 'react';
 import * as css from './styles.css';
 import { Presence, usePresenceLabel } from '../../hooks/useUserPresence';
+import { Time } from '../message';
+import { useSetting } from '../../state/hooks/settings';
+import { settingsAtom } from '../../state/settings';
 
 const PresenceToColor: Record<Presence, MainColor> = {
   [Presence.Online]: 'Success',
@@ -23,11 +26,15 @@ const PresenceToColor: Record<Presence, MainColor> = {
 type PresenceBadgeProps = {
   presence: Presence;
   status?: string;
+  lastActiveTs?: number;
   size?: '200' | '300' | '400' | '500';
 };
-export function PresenceBadge({ presence, status, size }: PresenceBadgeProps) {
+export function PresenceBadge({ presence, status, lastActiveTs, size }: PresenceBadgeProps) {
   const label = usePresenceLabel();
   const badgeLabelId = useId();
+
+  const [hour24Clock] = useSetting(settingsAtom, 'hour24Clock');
+  const [dateFormatString] = useSetting(settingsAtom, 'dateFormatString');
 
   return (
     <TooltipProvider
@@ -41,6 +48,13 @@ export function PresenceBadge({ presence, status, size }: PresenceBadgeProps) {
             <Text size="L400">{label[presence]}</Text>
             {status && <Text size="T200">•</Text>}
             {status && <Text size="T200">{status}</Text>}
+            {(lastActiveTs && presence !== Presence.Online) && (
+              <>
+                <Text size="T200">•</Text>
+                <Text size="T200">Last seen</Text>
+                <Time compact={false} ts={lastActiveTs} hour24Clock={hour24Clock} dateFormatString={dateFormatString} />
+              </>
+            )}
           </Box>
         </Tooltip>
       }
