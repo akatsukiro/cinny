@@ -37,6 +37,7 @@ export const useUserPresence = (userId: string): UserPresence | undefined => {
     const updatePresence: UserEventHandlerMap[UserEvent.Presence] = (event, u) => {
       if (u.userId === user?.userId) {
         setPresence(getUserPresence(user));
+        isInitUserPresenceMap.set(user.userId, true);
       }
     };
     user?.on(UserEvent.Presence, updatePresence);
@@ -47,20 +48,16 @@ export const useUserPresence = (userId: string): UserPresence | undefined => {
       user?.removeListener(UserEvent.CurrentlyActive, updatePresence);
       user?.removeListener(UserEvent.LastPresenceTs, updatePresence);
     };
-  }, [user]);
+  }, [user, isInitUserPresenceMap]);
 
   useEffect(() => {
     const fetchInitPresence = async () => {
-      if (!user || user.lastPresenceTs || isInitUserPresenceMap.get(user.userId)) return;
-      const initPresence = await mx.getPresence(user.userId);
-      if (initPresence.presence === "offline"
-        && initPresence.status_msg === undefined
-        && initPresence.last_active_ago === undefined
-        && initPresence.currently_active === undefined) {
+      if (!user) {
         setPresence(undefined);
-        isInitUserPresenceMap.set(user.userId, true);
         return;
-      };
+      }
+      if (user.lastPresenceTs || isInitUserPresenceMap.get(user.userId)) return;
+      const initPresence = await mx.getPresence(user.userId);
       setPresence({
         presence: initPresence.presence as Presence,
         status: initPresence.status_msg,
@@ -69,10 +66,6 @@ export const useUserPresence = (userId: string): UserPresence | undefined => {
           ? Date.now() - initPresence.last_active_ago
           : undefined,
       });
-      if (initPresence.last_active_ago) {
-        user.lastActiveAgo = initPresence.last_active_ago;
-        user.lastPresenceTs = Date.now();
-      }
       isInitUserPresenceMap.set(user.userId, true);
     };
 
