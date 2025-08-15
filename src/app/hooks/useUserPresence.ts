@@ -56,7 +56,11 @@ export const useUserPresence = (userId: string): UserPresence | undefined => {
       if (initPresence.presence === "offline"
         && initPresence.status_msg === undefined
         && initPresence.last_active_ago === undefined
-        && initPresence.currently_active === undefined) return;
+        && initPresence.currently_active === undefined) {
+        setPresence(undefined);
+        isInitUserPresenceMap.set(user.userId, true);
+        return;
+      };
       setPresence({
         presence: initPresence.presence as Presence,
         status: initPresence.status_msg,
