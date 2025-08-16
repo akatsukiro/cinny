@@ -22,8 +22,8 @@ export const usePushNotifications = (self: ServiceWorkerGlobalScope) => {
   };
 
   const handleRoomMessageNotification = async (pushData: any) => {
-    const title = pushData?.sender_display_name && pushData?.room_name
-      ? `${pushData.sender_display_name} in ${pushData.room_name}`
+    const title = pushData?.sender_display_name
+      ? `${pushData.sender_display_name}${pushData?.room_name ? ` in ${pushData.room_name}` : ''}`
       : "New Notification";
     const body = pushData?.content?.body ?? "You have a new message";
     const data = {
@@ -37,8 +37,8 @@ export const usePushNotifications = (self: ServiceWorkerGlobalScope) => {
   }
 
   const handleEncryptedMessageNotification = async (pushData: any) => {
-    const title = pushData?.sender_display_name && pushData?.room_name
-      ? `${pushData.sender_display_name} in ${pushData.room_name}`
+    const title = pushData?.sender_display_name
+      ? `${pushData.sender_display_name}${pushData?.room_name ? ` in ${pushData.room_name}` : ''}`
       : "New Notification";
     const body = "Encrypted message";
     const data = {
@@ -55,7 +55,7 @@ export const usePushNotifications = (self: ServiceWorkerGlobalScope) => {
     const sender_display_name = pushData?.sender_display_name;
     const room_name = pushData?.room_name;
 
-    let body: string = "";
+    let body = "";
     if (sender_display_name && room_name)
       body = `${sender_display_name} invites you to ${room_name}`;
     if (sender_display_name && !room_name)
@@ -70,13 +70,13 @@ export const usePushNotifications = (self: ServiceWorkerGlobalScope) => {
       content: pushData!.content,
       timestamp: Date.now(),
       ...pushData.data
-    }
+    };
 
     await showNotificationWithData(
       "New Invitation",
       body,
       data
-    )
+    );
   };
 
   const handlePushNotificationPushData = async (pushData: any) => {
@@ -96,10 +96,11 @@ export const usePushNotifications = (self: ServiceWorkerGlobalScope) => {
       case EventType.RoomMember:
         if (!(pushData?.content?.membership == "invite")) return;
         await handleInvitationNotification(pushData);
-        return;
+        break;
+
       default:
         // no voip support in app anyway
-        return;
+        break;
     }
   };
 
