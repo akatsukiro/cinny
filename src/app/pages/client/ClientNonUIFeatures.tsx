@@ -190,7 +190,8 @@ function MessageNotifications() {
       eventId: string;
       message: string;
     }) => {
-      const noti = new window.Notification(`${username} in ${roomName}`, {
+      const title = username === roomName ? username : `${username} in ${roomName}`;
+      const noti = new window.Notification(title, {
         icon: roomAvatar,
         badge: roomAvatar,
         body: message,
@@ -256,7 +257,7 @@ function MessageNotifications() {
         const avatarMxc =
           room.getAvatarFallbackMember()?.getMxcAvatarUrl() ?? room.getMxcAvatarUrl();
         if (mEvent.isEncrypted()) await mEvent.getDecryptionPromise();
-        let content = mEvent.getContent();
+        const content = mEvent.getContent();
         notify({
           roomName: room.name ?? 'Unknown',
           roomAvatar: avatarMxc
@@ -342,9 +343,9 @@ function HandleNotificationClick() {
       case EventType.RoomMember:
         if (!(messageData?.content?.membership == "invite")) return;
         navigate(getInboxInvitesPath());
-        return;
+
       default:
-        return;
+
     }
   };
 
