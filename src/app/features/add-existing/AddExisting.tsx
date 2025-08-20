@@ -54,6 +54,8 @@ import { StateEvent } from '../../../types/matrix/room';
 import { getViaServers } from '../../plugins/via-servers';
 import { rateLimitedActions } from '../../utils/matrix';
 import { useAlive } from '../../hooks/useAlive';
+import { useSetting } from '../../state/hooks/settings';
+import { settingsAtom } from '../../state/settings';
 
 const SEARCH_OPTS: UseAsyncSearchOptions = {
   limit: 500,
@@ -74,6 +76,8 @@ export function AddExistingModal({ parentId, space, requestClose }: AddExistingM
   const mx = useMatrixClient();
   const useAuthentication = useMediaAuthentication();
   const alive = useAlive();
+
+  const [showRoomAvatars] = useSetting(settingsAtom, 'roomAvatars');
 
   const mDirects = useAtomValue(mDirectAtom);
   const spaces = useSpaces(mx, allRoomsAtom);
@@ -274,8 +278,8 @@ export function AddExistingModal({ parentId, space, requestClose }: AddExistingM
                               disabled={applyingChanges}
                               aria-pressed={selectedItem}
                               before={
-                                <Avatar size="200" radii={dm ? '400' : '300'}>
-                                  {dm || room.isSpaceRoom() ? (
+                                <Avatar size="200" radii={(dm || showRoomAvatars) ? '400' : '300'}>
+                                  {dm || room.isSpaceRoom() || showRoomAvatars ? (
                                     <RoomAvatar
                                       roomId={room.roomId}
                                       src={
