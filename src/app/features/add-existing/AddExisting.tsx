@@ -3,6 +3,7 @@ import {
   Avatar,
   Box,
   Button,
+  color,
   config,
   Header,
   Icon,
@@ -261,6 +262,9 @@ export function AddExistingModal({ parentId, space, requestClose }: AddExistingM
                         if (!room) return null;
                         const selectedItem = selected?.includes(roomId);
                         const dm = mDirects.has(room.roomId);
+                        const parents = [...roomIdToParents.get(roomId) ?? []].map((id) =>
+                          mx.getRoom(id)?.name
+                        )?.join(', ');
 
                         return (
                           <VirtualTile
@@ -301,13 +305,22 @@ export function AddExistingModal({ parentId, space, requestClose }: AddExistingM
                               }
                               after={selectedItem && <Icon size="200" src={Icons.Check} />}
                             >
-                              <Box grow="Yes">
+                              <Box grow={parents ? 'No' : 'Yes'}>
                                 <Text truncate size="T400">
                                   {queryHighlighRegex
                                     ? highlightText(queryHighlighRegex, [room.name])
                                     : room.name}
                                 </Text>
                               </Box>
+                              {parents && <Box grow="Yes" alignSelf="Center">
+                                <Text size="T300" style={{
+                                  paddingTop: "1px",
+                                  textWrap: "nowrap",
+                                  color: color.Secondary.MainLine
+                                }}>
+                                  {`- ${parents}`}
+                                </Text>
+                              </Box>}
                             </MenuItem>
                           </VirtualTile>
                         );
