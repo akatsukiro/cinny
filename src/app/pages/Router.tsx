@@ -69,6 +69,7 @@ import { CreateRoomModalRenderer } from '../features/create-room';
 import { HomeCreateRoom } from './client/home/CreateRoom';
 import { Create } from './client/create';
 import { CreateSpaceModalRenderer } from '../features/create-space';
+import { SearchModalRenderer } from '../features/search';
 
 export const createRouter = (clientConfig: ClientConfig, screenSize: ScreenSize) => {
   const { hashRouter } = clientConfig;
@@ -133,6 +134,7 @@ export const createRouter = (clientConfig: ClientConfig, screenSize: ScreenSize)
                       >
                         <Outlet />
                       </ClientLayout>
+                      <SearchModalRenderer />
                       <UserRoomProfileRenderer />
                       <CreateRoomModalRenderer />
                       <CreateSpaceModalRenderer />
