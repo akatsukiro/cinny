@@ -60,6 +60,8 @@ import navigation from '../../../client/state/navigation';
 import { useMediaAuthentication } from '../../hooks/useMediaAuthentication';
 import { KeySymbol } from '../../utils/key-symbol';
 import { isMacOS } from '../../utils/user-agent';
+import { useSetting } from '../../state/hooks/settings';
+import { settingsAtom } from '../../state/settings';
 
 enum SearchRoomType {
   Rooms = '#',
@@ -142,6 +144,8 @@ export function Search({ requestClose }: SearchProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { navigateRoom, navigateSpace } = useRoomNavigate();
   const roomToUnread = useAtomValue(roomToUnreadAtom);
+
+  const showRoomAvatars = useSetting(settingsAtom, 'roomAvatars');
 
   const [searchRoomType, setSearchRoomType] = useState<SearchRoomType>();
 
@@ -354,8 +358,8 @@ export function Search({ requestClose }: SearchProps) {
                             </Box>
                           }
                           before={
-                            <Avatar size="200" radii={dm ? '400' : '300'}>
-                              {dm || room.isSpaceRoom() ? (
+                            <Avatar size="200" radii={(dm || showRoomAvatars) ? '400' : '300'}>
+                              {dm || room.isSpaceRoom() || showRoomAvatars ? (
                                 <RoomAvatar
                                   roomId={room.roomId}
                                   src={
