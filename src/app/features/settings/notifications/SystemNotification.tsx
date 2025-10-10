@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Text, Switch, Button, color, Spinner } from 'folds';
 import { IPusherRequest } from 'matrix-js-sdk';
 import { useAtom } from 'jotai';
+import { isMobileOnly } from 'react-device-detect';
 import { SequenceCard } from '../../../components/sequence-card';
 import { SequenceCardStyle } from '../styles.css';
 import { SettingTile } from '../../../components/setting-tile';
@@ -19,8 +20,6 @@ import {
 } from './PushNotifications';
 import { useClientConfig } from '../../../hooks/useClientConfig';
 import { pushSubscriptionAtom } from '../../../state/pushSubscription';
-import { DeregisterAllPushersSetting } from './DeregisterPushNotifications';
-import { isMobileOnly } from 'react-device-detect';
 
 function EmailNotification() {
   const mx = useMatrixClient();
@@ -216,15 +215,6 @@ export function SystemNotification() {
         gap="400"
       >
         <EmailNotification />
-      </SequenceCard>
-
-      <SequenceCard
-        className={SequenceCardStyle}
-        variant="SurfaceVariant"
-        direction="Column"
-        gap="400"
-      >
-        <DeregisterAllPushersSetting />
       </SequenceCard>
     </Box>
   );

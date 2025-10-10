@@ -115,10 +115,10 @@ export function DeregisterAllPushersSetting() {
       )}
 
       <SettingTile
-        title="Reset all push notifications"
+        title="Reset All Push Notifications"
         description={
           <div>
-            <Text>
+            <Text size="T200">
               This will remove push notifications from all your sessions/devices. You will need to
               re-enable them on each device individually.
             </Text>
@@ -137,8 +137,15 @@ export function DeregisterAllPushersSetting() {
           </div>
         }
         after={
-          <Button size="300" radii="300" onClick={handleOpenConfirmDialog}>
-            <Text size="B300" style={{ color: color.Critical.Main }}>
+          <Button
+            size="300"
+            radii="300"
+            variant="Critical"
+            fill="Soft"
+            outlined
+            onClick={handleOpenConfirmDialog}
+          >
+            <Text as="span" size="B300">
               Reset All
             </Text>
           </Button>

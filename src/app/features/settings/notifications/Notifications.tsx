@@ -8,6 +8,7 @@ import { KeywordMessagesNotifications } from './KeywordMessages';
 import { SequenceCard } from '../../../components/sequence-card';
 import { SequenceCardStyle } from '../styles.css';
 import { SettingTile } from '../../../components/setting-tile';
+import { DangerZone } from './DangerZone';
 
 type NotificationsProps = {
   requestClose: () => void;
@@ -50,6 +51,7 @@ export function Notifications({ requestClose }: NotificationsProps) {
                   />
                 </SequenceCard>
               </Box>
+              <DangerZone />
             </Box>
           </PageContent>
         </Scroll>
