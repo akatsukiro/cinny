@@ -173,15 +173,28 @@ self.addEventListener('notificationclick', (event: NotificationEvent) => {
   const eventType = messageData?.type as (EventType | undefined);
   if (!eventType) return Promise.resolve();
 
-  let targetUrl = `${scope}inbox/`;
-  if (
-    (eventType === EventType.RoomMessage || eventType === EventType.RoomMessageEncrypted) &&
-    messageData?.room_id && messageData?.event_id
-  ) targetUrl = `${scope}to/${messageData.room_id}/${messageData.event_id}`;
-  if (
-    eventType === EventType.RoomMember &&
-    messageData?.content?.membership === "invite"
-  ) targetUrl = `${scope}inbox/invites/`;
+  const targetUrl = (() => {
+    switch (true) {
+      case [
+        EventType.RoomMessage,
+        EventType.Sticker,
+        EventType.RoomMessageEncrypted,
+      ].includes(eventType) &&
+        !!messageData?.room_id &&
+        !!messageData?.event_id:
+
+        return `${scope}to/${messageData.room_id}/${messageData.event_id}`;
+
+      case eventType === EventType.RoomMember &&
+        messageData?.content?.membership === "invite":
+
+        return `${scope}inbox/invites/`;
+
+      default:
+        return `${scope}inbox/`;
+    }
+  })();
+
   console.log(`target url = ${targetUrl}`);
 
   const postMessageToClient = (client: WindowClient) => {
