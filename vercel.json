@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    { "source": "/config.json", "destination": "/config.json" },
+    { "source": "/manifest.json", "destination": "/manifest.json" },
+    { "source": "/sw.js", "destination": "/sw.js" },
+    { "source": "/pdf.worker.min.js", "destination": "/pdf.worker.min.js" },
+
+    { "source": "/public/:path*", "destination": "/public/:path*" },
+    { "source": "/assets/:path*", "destination": "/assets/:path*" },
+
+    { "source": "/:path*", "destination": "/index.html" }
+  ]
+}
