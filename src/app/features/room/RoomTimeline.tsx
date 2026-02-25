@@ -475,6 +475,7 @@ export function RoomTimeline({ room, eventId, roomInputRef, editor }: RoomTimeli
   const permissions = useRoomPermissions(creators, powerLevels);
 
   const canRedact = permissions.action('redact', mx.getSafeUserId());
+  const canDeleteOwn = permissions.event(MessageEvent.RoomRedaction, mx.getSafeUserId());
   const canSendReaction = permissions.event(MessageEvent.Reaction, mx.getSafeUserId());
   const canPinEvent = permissions.stateEvent(StateEvent.RoomPinnedEvents, mx.getSafeUserId());
   const [editId, setEditId] = useState<string>();
@@ -1051,7 +1052,7 @@ export function RoomTimeline({ room, eventId, roomInputRef, editor }: RoomTimeli
             collapse={collapse}
             highlight={highlighted}
             edit={editId === mEventId}
-            canDelete={canRedact || mEvent.getSender() === mx.getUserId()}
+            canDelete={canRedact || (canDeleteOwn && mEvent.getSender() === mx.getUserId())}
             canSendReaction={canSendReaction}
             canPinEvent={canPinEvent}
             imagePackRooms={imagePackRooms}
@@ -1133,7 +1134,7 @@ export function RoomTimeline({ room, eventId, roomInputRef, editor }: RoomTimeli
             collapse={collapse}
             highlight={highlighted}
             edit={editId === mEventId}
-            canDelete={canRedact || mEvent.getSender() === mx.getUserId()}
+            canDelete={canRedact || (canDeleteOwn && mEvent.getSender() === mx.getUserId())}
             canSendReaction={canSendReaction}
             canPinEvent={canPinEvent}
             imagePackRooms={imagePackRooms}
@@ -1251,7 +1252,7 @@ export function RoomTimeline({ room, eventId, roomInputRef, editor }: RoomTimeli
             messageLayout={messageLayout}
             collapse={collapse}
             highlight={highlighted}
-            canDelete={canRedact || mEvent.getSender() === mx.getUserId()}
+            canDelete={canRedact || (canDeleteOwn && mEvent.getSender() === mx.getUserId())}
             canSendReaction={canSendReaction}
             canPinEvent={canPinEvent}
             imagePackRooms={imagePackRooms}
