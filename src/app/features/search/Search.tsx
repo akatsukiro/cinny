@@ -377,7 +377,7 @@ export function Search({ requestClose }: SearchProps) {
                                 <RoomIcon
                                   size="100"
                                   joinRule={room.getJoinRule()}
-                                  space={room.isSpaceRoom()}
+                                  roomType={room.getType()}
                                 />
                               )}
                             </Avatar>

@@ -299,7 +299,11 @@ export function AddExistingModal({ parentId, space, requestClose }: AddExistingM
                                       )}
                                     />
                                   ) : (
-                                    <RoomIcon size="200" joinRule={room.getJoinRule()} />
+                                    <RoomIcon
+                                      size="200"
+                                      joinRule={room.getJoinRule()}
+                                      roomType={room.getType()}
+                                    />
                                   )}
                                 </Avatar>
                               }

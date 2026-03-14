@@ -70,6 +70,8 @@ import { Create } from './client/create';
 import { CreateSpaceModalRenderer } from '../features/create-space';
 import { SearchModalRenderer } from '../features/search';
 import { getFallbackSession } from '../state/sessions';
+import { CallStatusRenderer } from './CallStatusRenderer';
+import { CallEmbedProvider } from '../components/CallEmbedProvider';
 
 export const createRouter = (clientConfig: ClientConfig, screenSize: ScreenSize) => {
   const { hashRouter } = clientConfig;
@@ -108,7 +110,8 @@ export const createRouter = (clientConfig: ClientConfig, screenSize: ScreenSize)
 
       <Route
         loader={() => {
-          if (!getFallbackSession()) {
+          const session = getFallbackSession();
+          if (!session) {
             const afterLoginPath = getAppPathFromHref(
               getOriginBaseUrl(hashRouter),
               window.location.href
@@ -125,15 +128,18 @@ export const createRouter = (clientConfig: ClientConfig, screenSize: ScreenSize)
                 <ClientRoomsNotificationPreferences>
                   <ClientBindAtoms>
                     <ClientNonUIFeatures>
-                      <ClientLayout
-                        nav={
-                          <MobileFriendlyClientNav>
-                            <SidebarNav />
-                          </MobileFriendlyClientNav>
-                        }
-                      >
-                        <Outlet />
-                      </ClientLayout>
+                      <CallEmbedProvider>
+                        <ClientLayout
+                          nav={
+                            <MobileFriendlyClientNav>
+                              <SidebarNav />
+                            </MobileFriendlyClientNav>
+                          }
+                        >
+                          <Outlet />
+                        </ClientLayout>
+                        <CallStatusRenderer />
+                      </CallEmbedProvider>
                       <SearchModalRenderer />
                       <UserRoomProfileRenderer />
                       <CreateRoomModalRenderer />

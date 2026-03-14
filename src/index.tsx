@@ -12,6 +12,8 @@ import App from './app/pages/App';
 
 // import i18n (needs to be bundled ;))
 import './app/i18n';
+import { pushSessionToSW } from './sw-session';
+import { getFallbackSession } from './app/state/sessions';
 
 enableMapSet();
 
@@ -46,6 +48,11 @@ if ('serviceWorker' in navigator) {
     }
   };
 
+  const sendSessionToSW = () => {
+    const session = getFallbackSession();
+    pushSessionToSW(session?.baseUrl, session?.accessToken);
+  };
+
   navigator.serviceWorker.register(swUrl, swRegisterOptions).then((registration) => {
     registration.onupdatefound = () => {
       const installingWorker = registration.installing;
@@ -59,26 +66,17 @@ if ('serviceWorker' in navigator) {
         };
       }
     };
-  });
+  }).then(sendSessionToSW);
+  navigator.serviceWorker.ready.then(sendSessionToSW);
 
   navigator.serviceWorker.addEventListener('message', (event) => {
     if (!event.data || !event.source) {
       return;
     }
+    const { type } = event.data ?? {};
 
-    if (event.data.type === 'token' && event.data.id) {
-      const token = localStorage.getItem('cinny_access_token') ?? undefined;
-      event.source.postMessage({
-        replyTo: event.data.id,
-        payload: token,
-      });
-    } else if (event.data.type === 'openRoom' && event.data.id) {
-      /* Example:
-      event.source.postMessage({
-        replyTo: event.data.id,
-        payload: success?,
-      });
-      */
+    if (type === 'requestSession') {
+      sendSessionToSW();
     }
   });
 }
