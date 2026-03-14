@@ -185,20 +185,6 @@ self.addEventListener('fetch', (event: FetchEvent) => {
       return fetch(event.request);
     })
   );
-  const { url, method } = event.request;
-
-  if (method !== 'GET' || !mediaPath(url)) return;
-
-  const { clientId } = event;
-  if (!clientId) return;
-
-  const session = sessions.get(clientId);
-  if (session) {
-    if (validMediaRequest(url, session.baseUrl)) {
-      event.respondWith(fetch(url, fetchConfig(session.accessToken)));
-    }
-    return;
-  }
 });
 
 
