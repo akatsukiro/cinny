@@ -309,6 +309,7 @@ export function MutualRoomsChip({ userId }: { userId: string }) {
       return <RoomIcon
         size="100"
         joinRule={room.getJoinRule()}
+        roomType={room.getType()}
       />;
     })();
 
@@ -346,7 +347,7 @@ export function MutualRoomsChip({ userId }: { userId: string }) {
                 )}
               />
             ) : (
-              <RoomIcon size="100" joinRule={room.getJoinRule()} roomType={room.getType()} />
+              roomAvatar
             )}
           </Avatar>
         }
