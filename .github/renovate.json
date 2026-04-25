@@ -13,8 +13,10 @@
       "matchUpdateTypes": ["lockFileMaintenance"]
     },
     {
-      "groupName": "Slatejs",
       "matchPackageNames": ["slate", "slate-dom", "slate-history", "slate-react"]
+    },
+    {
+      "matchPackageNames": ["linkifyjs", "linkify-react"]
     }
   ],
   "lockFileMaintenance": {
