@@ -3,65 +3,131 @@ import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
 import { EventType } from "matrix-js-sdk/lib/@types/event";
 import { usePushNotifications } from './sw/pushNotification';
 
-export type { };
+export type {};
 declare const self: ServiceWorkerGlobalScope;
 
 const { handlePushNotificationPushData } = usePushNotifications(self);
 
-const pendingReplies = new Map();
-let messageIdCounter = 0;
-function sendAndWaitForReply(client: WindowClient, type: string, payload: object) {
-  messageIdCounter += 1;
-  const id = messageIdCounter;
-  const promise = new Promise((resolve) => {
-    pendingReplies.set(id, resolve);
+type SessionInfo = {
+  accessToken: string;
+  baseUrl: string;
+};
+
+/**
+ * Store session per client (tab)
+ */
+const sessions = new Map<string, SessionInfo>();
+
+const clientToResolve = new Map<string, (value: SessionInfo | undefined) => void>();
+const clientToSessionPromise = new Map<string, Promise<SessionInfo | undefined>>();
+
+async function cleanupDeadClients() {
+  const activeClients = await self.clients.matchAll();
+  const activeIds = new Set(activeClients.map((c) => c.id));
+
+  Array.from(sessions.keys()).forEach((id) => {
+    if (!activeIds.has(id)) {
+      sessions.delete(id);
+      clientToResolve.delete(id);
+      clientToSessionPromise.delete(id);
+    }
   });
-  client.postMessage({ type, id, payload });
+}
+
+function setSession(clientId: string, accessToken: any, baseUrl: any) {
+  if (typeof accessToken === 'string' && typeof baseUrl === 'string') {
+    sessions.set(clientId, { accessToken, baseUrl });
+  } else {
+    // Logout or invalid session
+    sessions.delete(clientId);
+  }
+
+  const resolveSession = clientToResolve.get(clientId);
+  if (resolveSession) {
+    resolveSession(sessions.get(clientId));
+    clientToResolve.delete(clientId);
+    clientToSessionPromise.delete(clientId);
+  }
+}
+
+function requestSession(client: Client): Promise<SessionInfo | undefined> {
+  const promise =
+    clientToSessionPromise.get(client.id) ??
+    new Promise((resolve) => {
+      clientToResolve.set(client.id, resolve);
+      client.postMessage({ type: 'requestSession' });
+    });
+
+  if (!clientToSessionPromise.has(client.id)) {
+    clientToSessionPromise.set(client.id, promise);
+  }
+
   return promise;
 }
 
-async function fetchWithRetry(
-  url: string,
-  token: string,
-  retries = 3,
-  delay = 250
-): Promise<Response> {
-  let lastError: Error | undefined;
+async function requestSessionWithTimeout(
+  clientId: string,
+  timeoutMs = 3000
+): Promise<SessionInfo | undefined> {
+  const client = await self.clients.get(clientId);
+  if (!client) return undefined;
 
-  /*  eslint-disable no-await-in-loop */
-  for (let attempt = 1; attempt <= retries; attempt += 1) {
-    try {
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  const sessionPromise = requestSession(client);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+  const timeout = new Promise<undefined>((resolve) => {
+    setTimeout(() => resolve(undefined), timeoutMs);
+  });
 
-      return response;
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error(String(error));
-
-      if (attempt < retries) {
-        console.warn(
-          `Fetch attempt ${attempt} failed: ${lastError.message}. Retrying in ${delay}ms...`
-        );
-        await new Promise((res) => {
-          setTimeout(res, delay);
-        });
-      }
-    }
-  }
-  /*  eslint-enable no-await-in-loop */
-  throw new Error(`Fetch failed after ${retries} retries. Last error: ${lastError?.message}`);
+  return Promise.race([sessionPromise, timeout]);
 }
 
-function fetchConfig(token?: string): RequestInit | undefined {
-  if (!token) return undefined;
+self.addEventListener('install', () => {
+  self.skipWaiting();
+});
 
+self.addEventListener('activate', (event: ExtendableEvent) => {
+  event.waitUntil(
+    (async () => {
+      await self.clients.claim();
+      await cleanupDeadClients();
+    })()
+  );
+});
+
+/**
+ * Receive session updates from clients
+ */
+self.addEventListener('message', (event: ExtendableMessageEvent) => {
+  const client = event.source as Client | null;
+  if (!client) return;
+
+  const { type, accessToken, baseUrl } = event.data || {};
+
+  if (type === 'setSession') {
+    setSession(client.id, accessToken, baseUrl);
+    cleanupDeadClients();
+  }
+});
+
+const MEDIA_PATHS = ['/_matrix/client/v1/media/download', '/_matrix/client/v1/media/thumbnail'];
+
+function mediaPath(url: string): boolean {
+  try {
+    const { pathname } = new URL(url);
+    return MEDIA_PATHS.some((p) => pathname.startsWith(p));
+  } catch {
+    return false;
+  }
+}
+
+function validMediaRequest(url: string, baseUrl: string): boolean {
+  return MEDIA_PATHS.some((p) => {
+    const validUrl = new URL(p, baseUrl);
+    return url.startsWith(validUrl.href);
+  });
+}
+
+function fetchConfig(token: string): RequestInit {
   return {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -83,52 +149,41 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
     );
     return;
   }
-  const { replyTo } = event.data;
-  if (replyTo) {
-    const resolve = pendingReplies.get(replyTo);
-    if (resolve) {
-      pendingReplies.delete(replyTo);
-      resolve(event.data.payload);
-    }
+  const client = event.source as Client | null;
+  if (!client) return;
+
+  const { type, accessToken, baseUrl } = event.data || {};
+
+  if (type === 'setSession') {
+    setSession(client.id, accessToken, baseUrl);
+    cleanupDeadClients();
   }
 });
 
-self.addEventListener('activate', (event: ExtendableEvent) => {
-  event.waitUntil(
-    (async () => {
-      await self.clients.claim();
-    })()
-  );
-});
-
-self.addEventListener('install', (event: ExtendableEvent) => {
-  event.waitUntil(self.skipWaiting());
-});
 
 self.addEventListener('fetch', (event: FetchEvent) => {
   const { url, method } = event.request;
-  if (method !== 'GET') return;
-  if (
-    !url.includes('/_matrix/client/v1/media/download') &&
-    !url.includes('/_matrix/client/v1/media/thumbnail')
-  ) {
+
+  if (method !== 'GET' || !mediaPath(url)) return;
+
+  const { clientId } = event;
+  if (!clientId) return;
+
+  const session = sessions.get(clientId);
+  if (session) {
+    if (validMediaRequest(url, session.baseUrl)) {
+      event.respondWith(fetch(url, fetchConfig(session.accessToken)));
+    }
     return;
   }
+
   event.respondWith(
-    (async (): Promise<Response> => {
-      if (!event.clientId) throw new Error('Missing clientId');
-      const client = await self.clients.get(event.clientId);
-      if (!client) throw new Error('Client not found');
-      const token = await sendAndWaitForReply(client, 'token', {});
-      if (!token) throw new Error('Failed to retrieve token');
-      const response = await fetchWithRetry(url, token);
-      return response;
-    })()
-  );
-  event.waitUntil(
-    (async function() {
-      console.log('Ensuring fetch processing completes before worker termination.');
-    })()
+    requestSessionWithTimeout(clientId).then((s) => {
+      if (s && validMediaRequest(url, s.baseUrl)) {
+        return fetch(url, fetchConfig(s.accessToken));
+      }
+      return fetch(event.request);
+    })
   );
 });
 
