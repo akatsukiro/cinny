@@ -53,20 +53,23 @@ if ('serviceWorker' in navigator) {
     pushSessionToSW(session?.baseUrl, session?.accessToken);
   };
 
-  navigator.serviceWorker.register(swUrl, swRegisterOptions).then((registration) => {
-    registration.onupdatefound = () => {
-      const installingWorker = registration.installing;
-      if (installingWorker) {
-        installingWorker.onstatechange = () => {
-          if (installingWorker.state === 'installed') {
-            if (navigator.serviceWorker.controller) {
-              showUpdateAvailablePrompt(registration);
+  navigator.serviceWorker
+    .register(swUrl, swRegisterOptions)
+    .then((registration) => {
+      registration.onupdatefound = () => {
+        const installingWorker = registration.installing;
+        if (installingWorker) {
+          installingWorker.onstatechange = () => {
+            if (installingWorker.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                showUpdateAvailablePrompt(registration);
+              }
             }
-          }
-        };
-      }
-    };
-  }).then(sendSessionToSW);
+          };
+        }
+      };
+    })
+    .then(sendSessionToSW);
   navigator.serviceWorker.ready.then(sendSessionToSW);
 
   navigator.serviceWorker.addEventListener('message', (event) => {

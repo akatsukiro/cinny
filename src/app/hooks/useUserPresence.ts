@@ -23,7 +23,7 @@ const getUserPresence = (user: User): UserPresence => ({
   lastActiveTs: user.getLastActiveTs(),
 });
 
-const isInitUserPresenceMapAtom = atom<Map<string, boolean>>(new Map<string, boolean>);
+const isInitUserPresenceMapAtom = atom<Map<string, boolean>>(new Map<string, boolean>());
 
 export const useUserPresence = (userId: string): UserPresence | undefined => {
   const mx = useMatrixClient();

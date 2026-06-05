@@ -357,7 +357,7 @@ export function Search({ requestClose }: SearchProps) {
                             </Box>
                           }
                           before={
-                            <Avatar size="200" radii={(dm || showRoomAvatars) ? '400' : '300'}>
+                            <Avatar size="200" radii={dm || showRoomAvatars ? '400' : '300'}>
                               {dm || room.isSpaceRoom() || showRoomAvatars ? (
                                 <RoomAvatar
                                   roomId={room.roomId}

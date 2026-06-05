@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Text, Switch, Button, color, Spinner } from 'folds';
 import { IPusherRequest } from 'matrix-js-sdk';
@@ -193,21 +192,20 @@ export function SystemNotification() {
           after={<Switch value={showInAppNotifs} onChange={setShowInAppNotifs} />}
         />
       </SequenceCard>
-      {
-        isMobileOnly ? null :
-          <SequenceCard
-            className={SequenceCardStyle}
-            variant="SurfaceVariant"
-            direction="Column"
-            gap="400"
-          >
-            <SettingTile
-              title="Notification Sound"
-              description="Play sound when new message arrives and app is open."
-              after={<Switch value={isNotificationSounds} onChange={setIsNotificationSounds} />}
-            />
-          </SequenceCard>
-      }
+      {isMobileOnly ? null : (
+        <SequenceCard
+          className={SequenceCardStyle}
+          variant="SurfaceVariant"
+          direction="Column"
+          gap="400"
+        >
+          <SettingTile
+            title="Notification Sound"
+            description="Play sound when new message arrives and app is open."
+            after={<Switch value={isNotificationSounds} onChange={setIsNotificationSounds} />}
+          />
+        </SequenceCard>
+      )}
       <SequenceCard
         className={SequenceCardStyle}
         variant="SurfaceVariant"

@@ -39,11 +39,18 @@ export function PresenceBadge({ presence, status, lastActiveTs, size }: Presence
   const lastSeen = (() => {
     if (!lastActiveTs || Number.isNaN(lastActiveTs)) return null;
     if (presence === Presence.Online) return null;
-    return <>
-      <Text size="T200">•</Text>
-      <Text size="T200">Last seen</Text>
-      <Time compact={false} ts={lastActiveTs} hour24Clock={hour24Clock} dateFormatString={dateFormatString} />
-    </>;
+    return (
+      <>
+        <Text size="T200">•</Text>
+        <Text size="T200">Last seen</Text>
+        <Time
+          compact={false}
+          ts={lastActiveTs}
+          hour24Clock={hour24Clock}
+          dateFormatString={dateFormatString}
+        />
+      </>
+    );
   })();
 
   return (

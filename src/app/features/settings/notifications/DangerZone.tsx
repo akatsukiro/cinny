@@ -19,7 +19,7 @@ function RecreatePushSubscription() {
   const pushSubAtom = useAtom(pushSubscriptionAtom);
   const setPushSubscription = useSetAtom(pushSubscriptionAtom);
 
-  const pushNotificationEnabled = useSetting(settingsAtom, "usePushNotifications");
+  const pushNotificationEnabled = useSetting(settingsAtom, 'usePushNotifications');
 
   const recreatePushSubscription = async () => {
     if (pushNotificationEnabled) {
@@ -41,7 +41,8 @@ function RecreatePushSubscription() {
       description={
         <div>
           <Text size="T200">
-            Recreate a new push notification subscription for this session. May be useful when push notification is not working.
+            Recreate a new push notification subscription for this session. May be useful when push
+            notification is not working.
           </Text>
           {recreatePushSubState.status === AsyncStatus.Error && (
             <Text as="span" style={{ color: color.Critical.Main }} size="T200">
@@ -76,13 +77,15 @@ function RecreatePushSubscription() {
         )
       }
     />
-  )
+  );
 }
 
 export function DangerZone() {
   return (
     <Box direction="Column" gap="100">
-      <Text size="L400" style={{ color: color.Critical.Main }}>Danger Zone</Text>
+      <Text size="L400" style={{ color: color.Critical.Main }}>
+        Danger Zone
+      </Text>
       <SequenceCard
         className={SequenceCardStyle}
         variant="SurfaceVariant"
@@ -100,6 +103,5 @@ export function DangerZone() {
         <DeregisterAllPushersSetting />
       </SequenceCard>
     </Box>
-
   );
 }

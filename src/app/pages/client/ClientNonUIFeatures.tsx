@@ -83,9 +83,11 @@ function FaviconUpdater() {
     try {
       navigator.setAppBadge(total);
       if (usePushNotifications && total === 0) {
-        registration.getNotifications()
-          .then((pushNotifications) => pushNotifications
-            .forEach((pushNotification) => pushNotification.close()));
+        registration
+          .getNotifications()
+          .then((pushNotifications) =>
+            pushNotifications.forEach((pushNotification) => pushNotification.close())
+          );
         navigator.clearAppBadge();
       }
     } catch (e) {
@@ -131,7 +133,7 @@ function InviteNotifications() {
   }, []);
 
   useEffect(() => {
-    if (usePushNotifications && document.visibilityState !== "visible") return;
+    if (usePushNotifications && document.visibilityState !== 'visible') return;
     if (invites.length > perviousInviteLen && mx.getSyncState() === 'SYNCING') {
       if (showNotifications && notificationPermission('granted')) {
         notify(invites.length - perviousInviteLen);
@@ -149,11 +151,10 @@ function InviteNotifications() {
     usePushNotifications,
     notificationSound,
     notify,
-    playSound
+    playSound,
   ]);
 
   return (
-    // eslint-disable-next-line jsx-a11y/media-has-caption
     <audio ref={audioRef} style={{ display: 'none' }}>
       <source src={InviteSound} type="audio/ogg" />
     </audio>
@@ -225,7 +226,7 @@ function MessageNotifications() {
       data
     ) => {
       if (mx.getSyncState() !== 'SYNCING') return;
-      if (usePushNotifications && document.visibilityState !== "visible") return;
+      if (usePushNotifications && document.visibilityState !== 'visible') return;
       if (document.hasFocus() && (selectedRoomId === room?.roomId || notificationSelected)) return;
 
       if (
@@ -291,7 +292,6 @@ function MessageNotifications() {
   ]);
 
   return (
-    // eslint-disable-next-line jsx-a11y/media-has-caption
     <audio ref={audioRef} style={{ display: 'none' }}>
       <source src={NotificationSound} type="audio/ogg" />
     </audio>
@@ -305,15 +305,15 @@ function UpdatePresence() {
   };
   const onBlur = () => {
     mx.setSyncPresence(SetPresence.Unavailable);
-  }
+  };
 
   useEffect(() => {
-    window.addEventListener("focus", onFocus);
-    window.addEventListener("blur", onBlur);
+    window.addEventListener('focus', onFocus);
+    window.addEventListener('blur', onBlur);
     onFocus();
     return () => {
-      window.removeEventListener("focus", onFocus);
-      window.removeEventListener("blur", onBlur);
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('blur', onBlur);
     };
   }, [mx]);
 
@@ -326,12 +326,9 @@ function HandleNotificationClick() {
 
   useEffect(() => {
     const handleNotificationClickEvent = (event: any) => {
-      if (
-        !event.data ||
-        !event.source
-      ) return;
+      if (!event.data || !event.source) return;
       const eventData = event.data;
-      if (!(eventData?.type === "notificationToRoomEvent")) return;
+      if (!(eventData?.type === 'notificationToRoomEvent')) return;
       const messageData = eventData?.message;
       if (!messageData) navigate(getInboxNotificationsPath());
 
@@ -342,7 +339,7 @@ function HandleNotificationClick() {
           navigateRoom(messageData!.room_id, messageData!.event_id);
           return;
         case EventType.RoomMember:
-          if (!(messageData?.content?.membership === "invite")) return;
+          if (!(messageData?.content?.membership === 'invite')) return;
           navigate(getInboxInvitesPath());
           break;
         default:
@@ -350,10 +347,10 @@ function HandleNotificationClick() {
       }
     };
 
-    navigator.serviceWorker.addEventListener("message", handleNotificationClickEvent);
+    navigator.serviceWorker.addEventListener('message', handleNotificationClickEvent);
     return () => {
-      navigator.serviceWorker.removeEventListener("message", handleNotificationClickEvent);
-    }
+      navigator.serviceWorker.removeEventListener('message', handleNotificationClickEvent);
+    };
   }, [navigate, navigateRoom]);
 
   return null;

@@ -1,6 +1,6 @@
 /// <reference lib="WebWorker" />
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
-import { EventType } from "matrix-js-sdk/lib/@types/event";
+import { EventType } from 'matrix-js-sdk/lib/@types/event';
 import { usePushNotifications } from './sw/pushNotification';
 
 export type {};
@@ -160,7 +160,6 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
   }
 });
 
-
 self.addEventListener('fetch', (event: FetchEvent) => {
   const { url, method } = event.request;
 
@@ -186,7 +185,6 @@ self.addEventListener('fetch', (event: FetchEvent) => {
     })
   );
 });
-
 
 const onPushNotification = async (event: PushEvent) => {
   if (!event?.data) {
@@ -225,24 +223,19 @@ self.addEventListener('notificationclick', (event: NotificationEvent) => {
   const { scope } = self.registration;
 
   console.log(messageData);
-  const eventType = messageData?.type as (EventType | undefined);
+  const eventType = messageData?.type as EventType | undefined;
   if (!eventType) return Promise.resolve();
 
   const targetUrl = (() => {
     switch (true) {
-      case [
-        EventType.RoomMessage,
-        EventType.Sticker,
-        EventType.RoomMessageEncrypted,
-      ].includes(eventType) &&
+      case [EventType.RoomMessage, EventType.Sticker, EventType.RoomMessageEncrypted].includes(
+        eventType
+      ) &&
         !!messageData?.room_id &&
         !!messageData?.event_id:
-
         return `${scope}to/${messageData.room_id}/${messageData.event_id}`;
 
-      case eventType === EventType.RoomMember &&
-        messageData?.content?.membership === "invite":
-
+      case eventType === EventType.RoomMember && messageData?.content?.membership === 'invite':
         return `${scope}inbox/invites/`;
 
       default:
@@ -254,8 +247,8 @@ self.addEventListener('notificationclick', (event: NotificationEvent) => {
 
   const postMessageToClient = (client: WindowClient) => {
     client.postMessage({
-      type: "notificationToRoomEvent",
-      message: messageData
+      type: 'notificationToRoomEvent',
+      message: messageData,
     });
   };
 

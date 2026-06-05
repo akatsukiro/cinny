@@ -1,4 +1,3 @@
-/* eslint-disable no-continue */
 import { MatrixEvent, Room, RoomEvent, RoomEventHandlerMap } from 'matrix-js-sdk';
 import { useEffect, useState } from 'react';
 import { settingsAtom } from '../state/settings';

@@ -301,22 +301,20 @@ export function MutualRoomsChip({ userId }: { userId: string }) {
 
     const roomAvatar = (() => {
       if (showRoomAvatars) {
-        return <RoomAvatar
-          roomId={roomId}
-          src={getRoomAvatarUrl(mx, room, 96, useAuthentication)}
-          alt={room.name}
-          renderFallback={() => (
-            <Text as="span" size="H6">
-              {nameInitials(room.name)}
-            </Text>
-          )}
-        />
+        return (
+          <RoomAvatar
+            roomId={roomId}
+            src={getRoomAvatarUrl(mx, room, 96, useAuthentication)}
+            alt={room.name}
+            renderFallback={() => (
+              <Text as="span" size="H6">
+                {nameInitials(room.name)}
+              </Text>
+            )}
+          />
+        );
       }
-      return <RoomIcon
-        size="100"
-        joinRule={room.getJoinRule()}
-        roomType={room.getType()}
-      />;
+      return <RoomIcon size="100" joinRule={room.getJoinRule()} roomType={room.getType()} />;
     })();
 
     return (
@@ -336,7 +334,7 @@ export function MutualRoomsChip({ userId }: { userId: string }) {
           closeUserRoomProfile();
         }}
         before={
-          <Avatar size="200" radii={(dm || showRoomAvatars) ? '400' : '300'}>
+          <Avatar size="200" radii={dm || showRoomAvatars ? '400' : '300'}>
             {dm || room.isSpaceRoom() ? (
               <RoomAvatar
                 roomId={room.roomId}

@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Avatar,

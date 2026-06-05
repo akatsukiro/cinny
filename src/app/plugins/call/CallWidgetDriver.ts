@@ -151,10 +151,9 @@ export class CallWidgetDriver extends WidgetDriver {
       // attempt to re-batch these up into a single request
       const invertedContentMap: { [content: string]: { userId: string; deviceId: string }[] } = {};
 
-      // eslint-disable-next-line no-restricted-syntax
       for (const userId of Object.keys(contentMap)) {
         const userContentMap = contentMap[userId];
-        // eslint-disable-next-line no-restricted-syntax
+
         for (const deviceId of Object.keys(userContentMap)) {
           const content = userContentMap[deviceId];
           const stringifiedContent = JSON.stringify(content);
@@ -316,7 +315,6 @@ export class CallWidgetDriver extends WidgetDriver {
     return this.mx.getVisibleRooms().map((r) => r.roomId);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   public processError(error: unknown): IWidgetApiErrorResponseDataDetails | undefined {
     return error instanceof MatrixError
       ? { matrix_api_error: error.asWidgetApiErrorData() }

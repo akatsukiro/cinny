@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { FormEventHandler, MouseEventHandler, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import {

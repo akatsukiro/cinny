@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 import React, {
   Dispatch,
   MouseEventHandler,
@@ -800,12 +799,11 @@ export function RoomTimeline({ room, eventId, roomInputRef, editor }: RoomTimeli
     )
   );
 
-  useEffect(
-    () => {
-      if (eventId) {
-        handleOpenEvent(eventId);
-      }
-    }, [eventId]);
+  useEffect(() => {
+    if (eventId) {
+      handleOpenEvent(eventId);
+    }
+  }, [eventId]);
 
   // Scroll to bottom on initial timeline load
   useLayoutEffect(() => {

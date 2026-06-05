@@ -37,7 +37,7 @@ export function useAppVisibility(mx: MatrixClient | undefined) {
     };
 
     appEvents.onVisibilityChange = handleVisibilityForNotifications;
-    // eslint-disable-next-line consistent-return
+
     return () => {
       appEvents.onVisibilityChange = null;
     };

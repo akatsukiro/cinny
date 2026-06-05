@@ -262,9 +262,9 @@ export function AddExistingModal({ parentId, space, requestClose }: AddExistingM
                         if (!room) return null;
                         const selectedItem = selected?.includes(roomId);
                         const dm = mDirects.has(room.roomId);
-                        const parents = [...roomIdToParents.get(roomId) ?? []].map((id) =>
-                          mx.getRoom(id)?.name
-                        )?.join(', ');
+                        const parents = [...(roomIdToParents.get(roomId) ?? [])]
+                          .map((id) => mx.getRoom(id)?.name)
+                          ?.join(', ');
 
                         return (
                           <VirtualTile
@@ -282,7 +282,7 @@ export function AddExistingModal({ parentId, space, requestClose }: AddExistingM
                               disabled={applyingChanges}
                               aria-pressed={selectedItem}
                               before={
-                                <Avatar size="200" radii={(dm || showRoomAvatars) ? '400' : '300'}>
+                                <Avatar size="200" radii={dm || showRoomAvatars ? '400' : '300'}>
                                   {dm || room.isSpaceRoom() || showRoomAvatars ? (
                                     <RoomAvatar
                                       roomId={room.roomId}
@@ -316,15 +316,20 @@ export function AddExistingModal({ parentId, space, requestClose }: AddExistingM
                                     : room.name}
                                 </Text>
                               </Box>
-                              {parents && <Box grow="Yes" alignSelf="Center">
-                                <Text size="T300" style={{
-                                  paddingTop: "1px",
-                                  textWrap: "nowrap",
-                                  color: color.Secondary.MainLine
-                                }}>
-                                  {`- ${parents}`}
-                                </Text>
-                              </Box>}
+                              {parents && (
+                                <Box grow="Yes" alignSelf="Center">
+                                  <Text
+                                    size="T300"
+                                    style={{
+                                      paddingTop: '1px',
+                                      textWrap: 'nowrap',
+                                      color: color.Secondary.MainLine,
+                                    }}
+                                  >
+                                    {`- ${parents}`}
+                                  </Text>
+                                </Box>
+                              )}
                             </MenuItem>
                           </VirtualTile>
                         );

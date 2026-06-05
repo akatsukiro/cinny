@@ -36,7 +36,6 @@ const fetchAllMutualRooms = async (mx: MatrixClient, userId: string): Promise<st
 
   let nextBatch: string | undefined;
   do {
-    // eslint-disable-next-line no-await-in-loop
     const result = await mx.http.authedRequest<MutualRoomsOK>(
       Method.Get,
       '/mutual_rooms',

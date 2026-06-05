@@ -47,7 +47,13 @@ export function UserHero({ userId, avatarUrl, presence }: UserHeroProps) {
         <AvatarPresence
           className={css.UserAvatarContainer}
           badge={
-            presence && <PresenceBadge presence={presence.presence} status={presence.status} lastActiveTs={presence.lastActiveTs} />
+            presence && (
+              <PresenceBadge
+                presence={presence.presence}
+                status={presence.status}
+                lastActiveTs={presence.lastActiveTs}
+              />
+            )
           }
         >
           <Avatar

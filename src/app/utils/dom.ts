@@ -236,7 +236,7 @@ export const notificationPermission = (permission: NotificationPermission) => {
   try {
     // https://stackoverflow.com/questions/29774836/failed-to-construct-notification-illegal-constructor
     // https://issues.chromium.org/issues/40415865
-    // eslint-disable-next-line no-new
+
     new Notification('');
   } catch {
     return false;
